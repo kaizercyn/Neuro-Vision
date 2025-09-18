@@ -87,7 +87,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-
 // Form submission
 document.getElementById('contactForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -218,7 +217,6 @@ window.addEventListener('scroll', () => {
 
 // Dynamic typing effect for tagline
 const taglineElements = document.querySelectorAll('.tagline span');
-let typingDelay = 2000;
 
 function typeWriter(element, text, speed = 100) {
     element.textContent = '';
@@ -244,16 +242,106 @@ window.addEventListener('load', () => {
     }, 1000);
 });
 
-// Add glitch effect to logo on hover
-const logoText = document.querySelector('.logo-text');
-if (logoText) {
-    logoText.addEventListener('mouseenter', () => {
-        logoText.style.animation = 'glitch 0.5s ease-in-out';
+// AI Security Terms Popup System
+const securityTerms = [
+    "ZERO-DAY DETECTION",
+    "BEHAVIORAL ANALYSIS", 
+    "ENDPOINT PROTECTION",
+    "THREAT INTELLIGENCE",
+    "MACHINE LEARNING",
+    "ANOMALY DETECTION",
+    "SANDBOXING",
+    "DEEP PACKET INSPECTION",
+    "NEURAL NETWORKS",
+    "RANSOMWARE SHIELD",
+    "ADVANCED PERSISTENT THREAT",
+    "INTRUSION PREVENTION", 
+    "CLOUD SECURITY",
+    "PREDICTIVE ANALYTICS",
+    "CYBER THREAT HUNTING",
+    "VULNERABILITY ASSESSMENT",
+    "SECURITY ORCHESTRATION",
+    "INCIDENT RESPONSE",
+    "DIGITAL FORENSICS",
+    "FIREWALL EVOLUTION"
+];
+
+function createSecurityPopup(text, x, y) {
+    const popup = document.createElement('div');
+    popup.textContent = text;
+    popup.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        color: #00E5FF;
+        font-family: 'Orbitron', monospace;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(0, 229, 255, 0.1);
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        backdrop-filter: blur(5px);
+        z-index: 999;
+        pointer-events: none;
+        opacity: 0;
+        transform: scale(0.8) translateY(10px);
+        transition: all 0.4s ease;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        max-width: 200px;
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        popup.style.opacity = '1';
+        popup.style.transform = 'scale(1) translateY(0)';
     });
     
-    logoText.addEventListener('animationend', () => {
-        logoText.style.animation = '';
-    });
+    // Remove after delay
+    setTimeout(() => {
+        popup.style.opacity = '0';
+        popup.style.transform = 'scale(0.8) translateY(-10px)';
+        setTimeout(() => {
+            if (popup.parentNode) {
+                document.body.removeChild(popup);
+            }
+        }, 400);
+    }, 2800);
+}
+
+// Generate security terms around the eye
+function generateSecurityTerm() {
+    if (!eye) return;
+    
+    // Check if we're in the hero section
+    const heroSection = document.querySelector('.hero-section');
+    const heroRect = heroSection.getBoundingClientRect();
+    
+    // Only generate popups if hero section is visible
+    if (heroRect.bottom < 0 || heroRect.top > window.innerHeight) {
+        return;
+    }
+    
+    const eyeRect = eye.getBoundingClientRect();
+    const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+    const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+    
+    // Generate random position around the eye
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = 180 + Math.random() * 120; // 180-300px from center
+    const x = eyeCenterX + Math.cos(angle) * distance - 100; // offset for text width
+    const y = eyeCenterY + Math.sin(angle) * distance - 15; // offset for text height
+    
+    // Make sure popup stays on screen and within hero section
+    const screenX = Math.max(10, Math.min(window.innerWidth - 210, x));
+    const screenY = Math.max(10, Math.min(window.innerHeight - 50, y));
+    
+    const randomTerm = securityTerms[Math.floor(Math.random() * securityTerms.length)];
+    createSecurityPopup(randomTerm, screenX, screenY);
 }
 
 // Additional interactive effects
@@ -282,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
     document.head.appendChild(scanAnimation);
-    eye.appendChild(scanLine);
+    if (eye) eye.appendChild(scanLine);
     
     // Add data stream effect to service cards
     document.querySelectorAll('.service-card').forEach(card => {
@@ -317,9 +405,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Add matrix rain effect on logo click
-    logoText.addEventListener('click', () => {
-        createMatrixRain();
-    });
+    const logoText = document.querySelector('.logo-text');
+    if (logoText) {
+        logoText.addEventListener('mouseenter', () => {
+            logoText.style.animation = 'glitch 0.5s ease-in-out';
+        });
+        
+        logoText.addEventListener('animationend', () => {
+            logoText.style.animation = '';
+        });
+        
+        logoText.addEventListener('click', () => {
+            createMatrixRain();
+        });
+    }
+    
+    // Start generating security terms after page loads
+    setTimeout(() => {
+        generateSecurityTerm();
+        setInterval(generateSecurityTerm, 3500); // Every 3.5 seconds
+    }, 3000);
+    
+    // Generate multiple terms on eye click
+    if (eye) {
+        eye.addEventListener('click', () => {
+            generateSecurityTerm();
+            setTimeout(() => generateSecurityTerm(), 300);
+            setTimeout(() => generateSecurityTerm(), 600);
+        });
+    }
 });
 
 // Matrix rain effect function
@@ -373,9 +487,6 @@ function createMatrixRain() {
 // Add pulse effect to threat detector on status change
 const threatDetector = document.querySelector('.threat-detector');
 if (threatDetector) {
-    const originalBorder = threatDetector.style.border;
-    
-    // Watch for status changes
     const statusObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === 'childList' || mutation.type === 'characterData') {
